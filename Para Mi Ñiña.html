@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carta Romántica</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Contenedor principal */
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 80px;
+      cursor: pointer;
+    }
+
+    /* Sobre */
+    .envelope {
+      width: 140px;
+      height: 100px;
+      background: #f8c8dc;
+      position: relative;
+      border: 2px solid #e75480;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .flap {
+      width: 0;
+      height: 0;
+      border-left: 70px solid transparent;
+      border-right: 70px solid transparent;
+      border-bottom: 50px solid #e75480;
+      position: absolute;
+      top: -50px;
+      left: 0;
+    }
+
+    .seal {
+      width: 40px;
+      height: 40px;
+      background: #ff1744;
+      border-radius: 50%;
+      position: absolute;
+      top: 30px;
+      left: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .open-text {
+      position: absolute;
+      bottom: -30px;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      color: #d6336c;
+      font-weight: bold;
+    }
+
+/* Carta */
+.letter {
+  width: 320px;
+  height: 340px;   /* ahora más larga (antes 300px) */
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: justify;
+  animation: fadeIn 1s ease forwards;
+  position: relative;
+}
+
+
+
+    .letter.show {
+      display: flex;
+    }
+
+    .letter h2 {
+      text-align: center;
+      color: #e91e63;
+      margin-bottom: 10px;
+    }
+
+    .firma {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #ff1744;
+    }
+
+    /* Texto escribiendo */
+    .typing {
+      position: fixed;
+      top: 30%;
+      left: 70%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      font-weight: bold;
+      color: #ff1744;
+      background: #fff;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 2;
+      white-space: pre-wrap;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      background-color: #ff1744;
+      animation: blink 0.7s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { background-color: transparent; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Corazones */
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      color: pink;
+      animation: fall linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10vh) rotate(0deg); }
+      100% { transform: translateY(110vh) rotate(360deg); }
+    }
+
+    /* Flores */
+    .flower {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0;
+      transition: opacity 1s ease;
+      animation: sway 3s ease-in-out infinite;
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(10deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts"></div>
+
+  <div class="container" onclick="abrirCarta()">
+    <div class="envelope">
+      <div class="flap"></div>
+      <div class="seal">❤</div>
+      <div class="open-text">Ábreme</div>
+    </div>
+
+    <!-- Carta -->
+    <div class="letter" id="carta">
+      <h2>De Andriwd para mi ñiña hermosa</h2>
+      <p>
+        Desde el primer instante en que llegaste a mi vida, todo cobró un sentido especial.  
+        Eres mi razón de sonreír, mi fuerza en los días difíciles y la luz que ilumina cada momento.  
+        Mi corazón late más fuerte solo por ti, y cada pensamiento me lleva a recordarte.  
+        Eres mi sueño hecho realidad, la melodía que da paz a mi alma y el motivo de mi felicidad.  
+      </p>
+      <!-- AHORA EL TEXTO ESTÁ DENTRO DE LA CARTA -->
+      <p class="firma">Feliz 21 de septiembre, mi ñiña 💖</p>
+    </div>
+  </div>
+
+  <div class="typing" id="escribiendo"></div>
+
+  <script>
+    const mensaje = "Espera... Andriwd te está escribiendo la carta ✍️";
+    let opened = false;
+
+    function abrirCarta() {
+      if (opened) return;
+      opened = true;
+
+      const escribiendo = document.getElementById("escribiendo");
+      escribiendo.style.display = "block";
+      escribiendo.innerHTML = "";
+
+      let i = 0;
+      function typeEffect() {
+        if (i < mensaje.length) {
+          escribiendo.innerHTML = mensaje.substring(0, i+1) + '<span class="cursor"></span>';
+          i++;
+          setTimeout(typeEffect, 70);
+        }
+      }
+      typeEffect();
+
+      // Mostrar carta después de 5s
+      setTimeout(() => {
+        escribiendo.style.display = "none";
+        document.getElementById("carta").classList.add("show");
+        mostrarFlores();
+      }, 5000);
+    }
+
+    // Corazones cayendo (rosados y blancos)
+    const heartsContainer = document.querySelector('.hearts');
+    function crearCorazon() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.innerHTML = '❤';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = (15 + Math.random() * 25) + 'px';
+      heart.style.animationDuration = (3 + Math.random() * 5) + 's';
+      heart.style.color = Math.random() > 0.5 ? 'pink' : 'white';
+      heartsContainer.appendChild(heart);
+
+      setTimeout(() => { heart.remove(); }, 8000);
+    }
+    setInterval(crearCorazon, 300);
+
+    // Flores alrededor de la carta
+    function mostrarFlores() {
+      const carta = document.getElementById("carta");
+      const posiciones = [
+        {top: "-20px", left: "-30px"},
+        {top: "-20px", right: "-30px"},
+        {bottom: "-20px", left: "-30px"},
+        {bottom: "-20px", right: "-30px"},
+        {top: "50%", left: "-40px"},
+        {top: "50%", right: "-40px"}
+      ];
+
+      posiciones.forEach(pos => {
+        const flor = document.createElement("div");
+        flor.className = "flower";
+        flor.innerHTML = "🌼";
+        Object.assign(flor.style, pos);
+        carta.appendChild(flor);
+        setTimeout(() => { flor.style.opacity = 1; }, 200);
+      });
+    }
+  </script>
+</body>
+</html>
